@@ -1,0 +1,16 @@
+import express from "express";
+import cors from "cors";
+import {env} from "./config.js";
+import {auth,requirePermission,signSession} from "./auth.js";
+import {query} from "./db.js";
+const app=express();
+app.use(cors({origin:env.CORS_ORIGIN==="*"?true:env.CORS_ORIGIN}));
+app.use(express.json({limit:"2mb"}));
+app.get("/api/health",async(_req,res)=>res.json({status:"ok",service:"distrisync-api",database:!!process.env.DATABASE_URL}));
+app.post("/api/auth/demo",async(req,res)=>{const tenantId=String(req.body?.tenantId||"demo-tenant"),role=String(req.body?.role||"owner");const permissions=["read","write","inventory","orders","finance","distribution","field","analytics","integrations","manufacturing","users"];res.json({token:signSession({userId:"demo-user",tenantId,role,permissions}),tenantId});});
+app.use("/api",auth);
+app.get("/api/me",(req,res)=>res.json({session:req.session}));
+app.get("/api/kpis",requirePermission("analytics"),async(req,res)=>{const rows=await query<{products:number}>(`select count(*)::int as products from products where tenant_id=$1`,[req.session!.tenantId]);res.json({products:rows[0]?.products??0,activeDistributors:0,todaysOrders:0,receivables:0});});
+app.get("/api/:resource",async(req,res)=>{const allowed=new Set(["customers","products","warehouses","orders","dispatches","distributors","wholesalers","sales-executives","attendance","dsr","invoices","collections","ledger","alerts","api-keys","webhooks","raw-materials","boms","production-orders","finished-goods"]);if(!allowed.has(req.params.resource))return res.status(404).json({error:"resource_not_found"});const table=req.params.resource.replaceAll("-","_");try{const rows=await query(`select * from ${table} where tenant_id=$1 order by created_at desc limit 100`,[req.session!.tenantId]);res.json({data:rows});}catch{res.json({data:[]});}});
+app.use((err:any,_req:any,res:any,_next:any)=>{console.error(err);res.status(500).json({error:"internal_error"});});
+app.listen(env.PORT,()=>console.log(`DistriSync API listening on ${env.PORT}`));

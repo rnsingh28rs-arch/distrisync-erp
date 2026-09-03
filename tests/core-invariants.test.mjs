@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const files=["api/migrations/001_foundation.sql","api/migrations/002_core_erp.sql","api/migrations/004_field_force.sql","api/migrations/005_finance.sql","api/migrations/008_manufacturing.sql"];
+for(const f of files) assert.ok(fs.existsSync(new URL("../"+f,import.meta.url)),`missing ${f}`);
+const sql=fs.readFileSync(new URL("../api/migrations/002_core_erp.sql",import.meta.url),"utf8");
+assert.match(sql,/tenant_id uuid NOT NULL REFERENCES tenants/i);
+assert.match(sql,/inventory_ledger/i);
+const finance=fs.readFileSync(new URL("../api/migrations/005_finance.sql",import.meta.url),"utf8");
+assert.match(finance,/journal_lines/i);
+const manufacturing=fs.readFileSync(new URL("../api/migrations/008_manufacturing.sql",import.meta.url),"utf8");
+assert.match(manufacturing,/production_orders/i);
+console.log("Core architecture invariants: PASS");

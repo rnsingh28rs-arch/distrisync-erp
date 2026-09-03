@@ -1,0 +1,10 @@
+{
+  "name": "distrisync-erp",
+  "private": true,
+  "workspaces": ["web", "api"],
+  "scripts": {
+    "build": "npm run build -w web",
+    "typecheck": "npm run typecheck -w api && npm run typecheck -w web",
+    "test": "node tests/core-invariants.test.mjs"
+  }
+}

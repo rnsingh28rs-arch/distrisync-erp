@@ -1,0 +1,33 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: distrisync-api
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: YOUR_PROJECT:YOUR_REGION:YOUR_INSTANCE
+    spec:
+      containers:
+        - image: REGION-docker.pkg.dev/YOUR_PROJECT/distrisync/distrisync-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: distrisync-database-url
+                  key: latest
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: distrisync-jwt-secret
+                  key: latest
+            - name: CORS_ORIGIN
+              value: https://YOUR_WEB_DOMAIN
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
