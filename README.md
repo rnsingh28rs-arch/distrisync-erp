@@ -1,7 +1,5 @@
-# DistriSync ERP — Original Old UI + Manufacturing
+# DistriSync ERP — Sales & Distribution Management Portal
 
-Cloud Sales & Distribution Management Platform.
+DistriSync ERP is a cloud Sales & Distribution Management Platform.
 
-This branch preserves the original portal UI and adds the Manufacturing panel only. Manufacturing covers Raw Materials, Finished Products, BOM / Formula, and Production / Consumption.
-
-**Bring My Bite is a completely separate project and is not part of this repository or deployment.**
+The product source preserves the original portal UI and adds Manufacturing as an additional panel. Bring My Bite is a separate project and is not part of DistriSync ERP.
