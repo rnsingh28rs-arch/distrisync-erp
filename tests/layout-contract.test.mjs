@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync(new URL('../index.html', import.meta.url),'utf8');
+assert.match(html,/Field Sales Executive/);
+assert.match(html,/Sales Executive Force Command/);
+assert.match(html,/Distributor/);
+assert.match(html,/Owner Name/);
+assert.match(html,/Contact Number/);
+assert.match(html,/RAW MATERIALS/);
+assert.match(html,/FINISHED PRODUCTS/);
+assert.match(html,/PRODUCTION \/ CONSUMPTION/);
+assert.match(html,/role!=='platform_owner'&&!licenses\[m\]\?'disabled':''/);
+assert.match(html,/data-manufacturing-type/);
+assert.match(html,/manufacturingFields/);
+console.log('Layout contract: PASS');
